@@ -236,7 +236,7 @@ def play_math_challenge():
                     min_time = i
         if spend_time > 10:
             char_print(f"   哦哦，你用了{spend_time}秒，超时啦！\n   游戏结束😏\033[32m\n\n")
-            char_print(f"   {"="*15}结算{"="*15}\n")
+            char_print(f"   {'='*15}结算{'='*15}\n")
             char_print(f"   这场挑战，你答对了{right_number}道题。\n")
             char_print(f"   你最快的一次，只用了{min_time}秒就算出了结果。\n")
             char_print(f"   恭喜你！勇士！\033[0m")
@@ -250,14 +250,14 @@ def play_math_challenge():
                     break
             if only_n:
                 char_print("   好吧😀，这题你不会，进入结算：\033[32m\n\n")
-                char_print(f"   {"="*15}结算{"="*15}\n")
+                char_print(f"   {'='*15}结算{'='*15}\n")
                 char_print(f"   这场挑战，你答对了{right_number}道题。\n")
                 char_print(f"   你最快的一次，只用了0秒就算出了结果。\n")
                 char_print(f"   恭喜你！勇士！\033[0m\n")
                 return None
             else:
                 char_print("   好吧😀，这题你不会，进入结算：\033[32m\n\n")
-                char_print(f"   {"="*15}结算{"="*15}\n")
+                char_print(f"   {'='*15}结算{'='*15}\n")
                 char_print(f"   这场挑战，你答对了{right_number}道题。\n")
                 char_print(f"   你最快的一次，只用了{spend_time}秒就算出了结果。\n")
                 char_print(f"   恭喜你！勇士！\033[0m\n")
@@ -267,7 +267,7 @@ def play_math_challenge():
             char_print("   答对啦！下一题👍\n")
         else:
             char_print("   不好！你答错啦！游戏结束👋\033[32m\n\n")
-            char_print(f"   {"="*15}结算{"="*15}\n")
+            char_print(f"   {'='*15}结算{'='*15}\n")
             char_print(f"   这场挑战，你答对了{right_number}道题。\n")
             char_print(f"   你最快的一次，只用了{min_time}秒就算出了结果。\n")
             char_print(f"   恭喜你！勇士！\n\033[0m")
