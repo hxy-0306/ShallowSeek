@@ -301,7 +301,7 @@ def run_app():
         t = input('说点什么：')
         clear_input_lines(t, '说点什么：')
         print(f"🧔:{t}")
-        if t == "n":
+        if t == "e":
             char_print("\033[32m🤖:再见啦,下次再聊哦!\033[0m")
             time.sleep(3)
             break
