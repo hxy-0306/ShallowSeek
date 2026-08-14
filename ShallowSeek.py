@@ -87,11 +87,22 @@ def answer(question):
             return None
     if "发疯" in question or "疯狂" in question:
         think_over()
-        is_crazy = True
-        char_print("\033[36m🤖:如你所愿！我要疯了……哇哩哇哩哇！你好！我是疯狂戴夫！\n\033[0m")
+        if not is_crazy:
+            is_crazy = True
+            char_print("\033[36m🤖:如你所愿！我要疯了……哇哩哇哩哇！你好！我是疯狂戴夫！\033[0m\n")
+        else:
+            char_print("\033[36m🤖:你说什么?告诉你，我已经疯狂了👾!\033[0m\n")
         return None
-    bc = become_crazy()
-    if bc == None:
+    if "恢复" in question:
+        think_over()
+        if is_crazy:
+            is_crazy = False
+            char_print("\033[34m🤖:好!这就恢复正常👋\033[0m\n")
+        else:
+            char_print("\033[34m🤖:你在说啥?我很正常啊🤔\033[0m\n")
+        return None
+    c = become_crazy()
+    if c == None:
         try:
             question = question.replace("=","").replace("?","").replace("!","").replace(" ","").replace("？","").replace("！","")
             question = question.replace("等于","").replace("几","")
@@ -116,7 +127,7 @@ def answer(question):
                 return random.choice(Q_A[q])
         return random.choice(BUSY_A)
     else:
-        return bc
+        return c
 
 #游戏函数
 def play_rqs():
