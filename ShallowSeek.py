@@ -69,6 +69,7 @@ def think_over():
 
 def answer(question):
     global is_crazy
+    answer_list = []
     if "速算" in question or "挑战" in question or "数学" in question:
         play_math_challenge()
         return None
@@ -122,9 +123,9 @@ def answer(question):
                 if q in question:
                     for t in Q_A[q]:
                         if t in question:
-                            return random.choice(Q_A[q][t])
+                            return(random.choice(Q_A[q]))
             elif q in question:
-                return random.choice(Q_A[q])
+                return(random.choice(Q_A[q]))
         return random.choice(BUSY_A)
     else:
         return c
@@ -288,7 +289,7 @@ def play_math_challenge():
 def become_crazy():
     global is_crazy
     global crazy_n
-    if crazy_n > 19 or random.randint(1,100) < 11:
+    if crazy_n > 9 or random.randint(1,100) < 11:
         is_crazy = False
         return None
     if is_crazy == True:
@@ -332,8 +333,8 @@ def run_app():
         a = answer(t)
         if a == None:
             continue
-        if len(a) > 100:
-            a = f"{a:.100}......"
+        if len(a) > 200:
+            a = f"{a:.200}......"
         last_say.clear()
         last_say.append(t)
         last_say.append(a)
