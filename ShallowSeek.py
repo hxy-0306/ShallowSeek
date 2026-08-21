@@ -8,7 +8,7 @@ import pprint as p
 from Q_A import *
 crazy_n = 0
 is_crazy = False
-v = 1.3
+v = 1.4
 last_say = []
 
 #定义函数
