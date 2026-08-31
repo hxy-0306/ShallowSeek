@@ -6,6 +6,8 @@ import shutil
 import unicodedata
 import pprint as p
 from Q_A import *
+from PIL import Image, ImageDraw, ImageFont
+import os
 crazy_n = 0
 is_crazy = False
 v = 1.4
@@ -101,6 +103,10 @@ def answer(question):
         else:
             char_print("\033[34m🤖:你在说啥?我很正常啊🤔\033[0m\n")
         return None
+    if "生成" in question and ("图片" in question or "照片" in question):
+        think_over()
+        make_png()
+        return None
     c = become_crazy()
     if c == None:
         try:
@@ -128,6 +134,22 @@ def answer(question):
         return random.choice(BUSY_A)
     else:
         return c
+
+def make_png():
+    img = Image.new('RGB', (400, 355), 'black')
+    draw = ImageDraw.Draw(img)
+
+    text = """  Haha! Just kidding! 
+This picture has nothing in it! :)"""
+    font = ImageFont.load_default()
+
+    bbox = draw.textbbox((0, 0), text, font=font)
+    x = (400 - (bbox[2] - bbox[0])) // 2
+    y = (355 - (bbox[3] - bbox[1])) // 2
+    draw.text((x, y), text, fill='white', font=font)
+
+    img.save('图片.png')
+    char_print("\033[34m🤖:已生成：图片.png，位置：当前文件夹\n\033[0m")
 
 #游戏函数
 def play_rqs():
@@ -318,7 +340,7 @@ def run_app():
             break
         if t == "h":
             char_print("\033[34m🤖:支持一些问题,比如:\n\033[0m")
-            char_print("\033[34m   你是谁、天气怎么样、你会做什么、你好\n   目前只会算阿拉伯数字算式,小数固定保留10位小数\n   内置石头剪刀布游戏\n\033[0m")
+            char_print("\033[34m   你是谁、天气怎么样、你会做什么、你好\n   目前只会算阿拉伯数字算式,小数固定保留10位小数(计算有风险，使用需谨慎)\n   内置石头剪刀布游戏\n\033[0m")
             continue
         if t == "v":
             char_print(f"\033[34m🤖:版本号-{v}\n\033[0m")
