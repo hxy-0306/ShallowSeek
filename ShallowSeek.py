@@ -43,7 +43,7 @@ def clean_float_result(result):
 
 def pysum(s):
     '''用eval计算算式的结果并返回'''
-    if len(s) < 41:
+    if len(s) < 30:
         try:
             num = eval(s)
             num = clean_float_result(num)
@@ -69,7 +69,6 @@ def think_over():
 
 def answer(question):
     global is_crazy
-    answer_list = []
     if "速算" in question or "挑战" in question or "数学" in question:
         play_math_challenge()
         return None
@@ -114,7 +113,7 @@ def answer(question):
                 return f"刚才你问：“{last_say[0]}”，我回答：“{last_say[1]}”"
             else:
                 return "我们还什么都没聊呢🧐"
-        if re.search(r"\d+[+\-*/]\d+",question):
+        if re.fullmatch(r"[\d+\-*/()**\s]+", question):
             return pysum(question)
         for q in Q_A:
             if re.search(r"^\s*$",question):
