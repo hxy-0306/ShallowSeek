@@ -1,18 +1,25 @@
 #导入模块
 import re
+import ast
 import time
 import shutil
 import random
+from Q_A import * 
 import unicodedata
 import pprint as p
 from PIL import Image, ImageDraw, ImageFont
-#导入词库
-from Q_A import * 
 #定义变量
 crazy_n = 0
 is_crazy = False
 v = 1.4
 last_say = []
+allowed = (ast.Expression, #表示算式
+           ast.BinOp, #二元运算
+           ast.UnaryOp, #一元运算
+           ast.Constant, #数字
+           ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow, #四则运算+次方
+           ast.USub #负号
+           )
 #电子宠物变量
 happy = 50
 satiety = 50
@@ -56,7 +63,7 @@ def pysum(s):
             num = clean_float_result(num)
             return f"答案是：{num}"
         except:
-            return "俺不鸡道怎么算w(ﾟДﾟ)w"
+            return "不知道是谁的问题，反正我没算出来😏"
     else:
         return "算式太长了,俺拒绝计算🤪!"
 
@@ -127,7 +134,7 @@ def answer(question):
                 return f"刚才你问：“{last_say[0]}”，我回答：“{last_say[1]}”"
             else:
                 return "我们还什么都没聊呢🧐"
-        if any(t in "0123456789+-*/(). " for t in question):
+        if can_turn_tree(question):
             return pysum(question)
         for q in Q_A:
             if re.search(r"^\s*$",question):
@@ -241,6 +248,16 @@ def virtual_pet():
         happy = max(0,min(100,happy))
         satiety = max(0,min(100,satiety))
         clean = max(0,min(100,clean))
+
+def can_turn_tree(code):
+    try:
+        tree = ast.parse(code,mode="eval")
+    except:
+        return False
+    for node in ast.walk(tree):
+        if not isinstance(node,allowed):
+            return False
+    return True
 
 #游戏函数
 def play_rqs():
@@ -413,24 +430,20 @@ def become_crazy():
     return None
 
 #主程序函数
-def run_app():
+def run():
     print("\033[93m正在启动ShallowSeek,请稍等...\033[0m",end = '\r')
     time.sleep(1)
     print("\033[92mShallowSeek已启动!           \033[0m")
     time.sleep(0.5)
     char_print("\n\033[94m嗨!我是ShallowSeek(浅度求索),有什么可以帮你的吗?\033[0m")
-    char_print("\n\033[94mh帮助,v看版本\033[0m\n")
+    char_print("\n\033[94mh帮助,v看版本(偷偷告诉你，计算要谨慎)\033[0m\n")
     while True:
         t = input('说点什么：')
         clear_input_lines(t, '说点什么：')
         print(f"🧔:{t}")
-        if t == "e":
-            char_print("\033[92m🤖:再见啦,下次再聊哦!\033[0m")
-            time.sleep(3)
-            break
         if t == "h":
             char_print("\033[94m🤖:支持一些问题,比如:\n\033[0m")
-            char_print("\033[94m   你是谁、天气怎么样、你会做什么、你好\n   目前只会算阿拉伯数字算式,小数固定保留10位小数(计算有风险，使用需谨慎)\n   内置石头剪刀布游戏\n\033[0m")
+            char_print("\033[94m   你是谁、天气怎么样、你会做什么、你好\n   支持算数字算式,小数保留10位(有风险，不要算太大的冥)\n   内置小游戏\n\033[0m")
             continue
         if t == "v":
             char_print(f"\033[94m🤖:版本号-{v}\n\033[0m")
@@ -444,8 +457,7 @@ def run_app():
         a = answer(t)
         if a == None:
             continue
-        if len(a) > 200:
-            a = f"{a:.200}......"
+        a = f"{a:.300}......"
         last_say.clear()
         last_say.append(t)
         last_say.append(a)
@@ -459,4 +471,4 @@ def run_app():
 
 #主程序
 if __name__ == "__main__":
-    run_app()
+    run()
