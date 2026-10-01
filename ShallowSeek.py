@@ -457,7 +457,8 @@ def run():
         a = answer(t)
         if a == None:
             continue
-        a = f"{a:.300}......"
+        if len(a) > 300:
+            a = f"{a:.300}......"
         last_say.clear()
         last_say.append(t)
         last_say.append(a)
