@@ -1,6 +1,8 @@
 #导入模块
 import re
+import os
 import ast
+import sys
 import time
 import shutil
 import random
@@ -75,9 +77,9 @@ def clear_input_lines(text, prompt):
         print("\033[F\033[2K", end='')
 
 def think_over():
-    for i in range(5):
-        t = '.' * (i + 1)
-        print(f"\033[94m正在思考中{t}\033[0m", end = '\r')
+    print("\033[94m正在思考",end="",flush=True)
+    for _ in range(5):
+        print(".",end="",flush=True)
         time.sleep(0.4)
     print('\r               ', end = '\r')
 
@@ -134,7 +136,7 @@ def answer(question):
                 return f"刚才你问：“{last_say[0]}”，我回答：“{last_say[1]}”"
             else:
                 return "我们还什么都没聊呢🧐"
-        if can_turn_tree(question):
+        if can_ast(question):
             return pysum(question)
         for q in Q_A:
             if re.search(r"^\s*$",question):
@@ -143,7 +145,7 @@ def answer(question):
                 if q in question:
                     for t in Q_A[q]:
                         if t in question:
-                            return(random.choice(Q_A[q]))
+                            return(random.choice(Q_A[q][t]))
             elif q in question:
                 return(random.choice(Q_A[q]))
         return random.choice(BUSY_A)
@@ -151,12 +153,23 @@ def answer(question):
         return c
 
 def make_png():
+    print("\033[94m正在生成",end="",flush=True)
+    for _ in range(5):
+        print(".",end="",flush=True)
+        time.sleep(0.4)
+    print('\r               ', end = '\r')
+
+    path = os.getcwd()
     img = Image.new('RGB', (400, 355), 'black')
     draw = ImageDraw.Draw(img)
 
-    text = """  Haha! Just kidding! 
-    This picture has nothing in it! :)"""
-    font = ImageFont.load_default()
+    text = """    哈哈哈！开个玩笑！
+    这张图片没有任何内容！""" 
+    try:
+        font_path = os.path.join(sys._MEIPASS,"font.ttf")
+    except:
+        font_path = "font.ttf"
+    font = ImageFont.truetype(font_path,20)
 
     bbox = draw.textbbox((0, 0), text, font=font)
     x = (400 - (bbox[2] - bbox[0])) // 2
@@ -164,7 +177,7 @@ def make_png():
     draw.text((x, y), text, fill='white', font=font)
 
     img.save('图片.png')
-    char_print("\033[94m🤖:已生成：图片.png，位置：当前文件夹\n\033[0m")
+    char_print(f"\033[94m🤖:已生成：图片.png，位置:{path}\\图片.png\n\033[0m")
 
 def virtual_pet():
     global happy,satiety,clean
@@ -188,6 +201,12 @@ def virtual_pet():
         clean += random.randint(8,12)
         satiety -= random.randint(1,3)
     elif a == "exit":
+        if happy > 49 and clean > 49 and satiety > 49:
+            char_print("\033[93m🐟:Good——bye!!")
+        elif happy < 30 and clean < 30 and satiety < 30:
+            char_print("\033[93m🐟:Bad——bye.")
+        else:
+            char_print("\033[93m🐟:Bye!")
         print("\033[0m")
         return None
     happy -= random.randint(2,3)
@@ -197,7 +216,7 @@ def virtual_pet():
     satiety = max(0,min(100,satiety))
     clean = max(0,min(100,clean))
     while True:
-        for i in range(7):
+        for _ in range(7):
             print("\033[F\033[2K",end="",flush=True)
         num = random.randint(1,3)
         if num == 1:
@@ -240,6 +259,12 @@ def virtual_pet():
             clean += random.randint(8,12)
             satiety -= random.randint(1,3)
         elif a == "exit":
+            if happy > 49 and clean > 49 and satiety > 49:
+                char_print("\033[93m🐟:Good——bye!!")
+            elif happy < 30 and clean < 30 and satiety < 30:
+                char_print("\033[93m🐟:Bad——bye.")
+            else:
+                char_print("\033[93m🐟:Bye!")
             print("\033[0m")
             return None
         happy -= random.randint(1,2)
@@ -249,7 +274,7 @@ def virtual_pet():
         satiety = max(0,min(100,satiety))
         clean = max(0,min(100,clean))
 
-def can_turn_tree(code):
+def can_ast(code):
     try:
         tree = ast.parse(code,mode="eval")
     except:
@@ -332,9 +357,6 @@ def play_guess_n():
     while True:
         a = input("")
         remaining_chances -= 1
-        if remaining_chances == 0:
-            char_print(f"\033[94m   机会用完了，正确答案是\033[93m{g_number}\033[94m，游戏结束!\033[0m\n")
-            return None
         if a.isdigit():
             a = int(a)
             if a == g_number:
@@ -342,14 +364,17 @@ def play_guess_n():
                 return None
             else:
                 char_print(f"\033[94m   不对哦，还有\033[93m{remaining_chances}\033[94m次机会。再猜:\033[0m")
+        if remaining_chances == 0:
+            char_print(f"\033[94m   机会用完了，正确答案是\033[93m{g_number}\033[94m，游戏结束!\033[0m\n")
+            return None
 
 def play_math_challenge():
     think_over()
     right_number = 0
     time_list = []
     a_list = []
-    char_print("\033[94m🤖:速算挑战开始！十秒内答题！\n   tip:除了数字别写别的，不会就敲n\n")
-    s = ["+","-","*","/"]
+    char_print("\033[94m🤖:速算挑战开始！五秒内答题！\n   tip:除了数字别写别的，不会就敲n\n")
+    s = "+-*/"
     while True:
         t = f"{random.randint(2,20)}{random.choice(s)}{random.randint(2,20)}"
         t_a = eval(t)
@@ -375,7 +400,7 @@ def play_math_challenge():
                 min_time = 20
                 if i < min_time:
                     min_time = i
-        if spend_time > 10:
+        if spend_time > 5:
             char_print(f"   哦哦，你用了{spend_time}秒，超时啦！\n   游戏结束😏\033[92m\n\n")
             char_print(f"   {'='*15}结算{'='*15}\n")
             char_print(f"   这场挑战，你答对了{right_number}道题。\n")
