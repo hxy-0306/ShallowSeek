@@ -31,7 +31,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --icon=favicon.ico ShallowSeek.py
+          pyinstaller --onefile --icon=favicon.ico --add-data "font.ttf:." ShallowSeek.py
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
