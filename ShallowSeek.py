@@ -364,6 +364,9 @@ def play_guess_n():
                 return None
             else:
                 char_print(f"\033[94m   不对哦，还有\033[93m{remaining_chances}\033[94m次机会。再猜:\033[0m")
+        else:
+            if not remaining_chances == 0:
+                char_print(f"\033[94m   不对哦，还有\033[93m{remaining_chances}\033[94m次机会。再猜:\033[0m")
         if remaining_chances == 0:
             char_print(f"\033[94m   机会用完了，正确答案是\033[93m{g_number}\033[94m，游戏结束!\033[0m\n")
             return None
@@ -382,7 +385,8 @@ def play_math_challenge():
             while  "-" in str(t_a) or "." in str(t_a):
                 t = f"{random.randint(2,20)}{random.choice(s)}{random.randint(2,20)}"
                 t_a = eval(t)
-        char_print(f"   算式'{t}=?'的结果：")
+        char_print(f"   算式'{t}=?'的结果:\033[0m")
+        print("\033[94m",end="",flush=True)
         start = time.time()
         a = input("")
         a_list.append(a)
