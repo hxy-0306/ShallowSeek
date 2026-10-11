@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 #定义变量
 crazy_n = 0
 is_crazy = False
-v = 1.4
+v = 1.6
 last_say = []
 allowed = (ast.Expression, #表示算式
            ast.BinOp, #二元运算
@@ -75,6 +75,16 @@ def clear_input_lines(text, prompt):
     lines = max(1, (total_width + columns - 1) // columns)
     for _ in range(lines):
         print("\033[F\033[2K", end='')
+
+def clear_display_lines(lines):
+    columns = shutil.get_terminal_size((80, 20)).columns
+    row_count = 0
+    for line in lines:
+        visible_line = re.sub(r"\033\[[0-?]*[ -/]*[@-~]", "", line)
+        width = display_width(visible_line)
+        row_count += max(1, (width + columns - 1) // columns)
+    for _ in range(row_count):
+        print("\033[F\033[2K", end="", flush=True)
 
 def think_over():
     print("\033[94m正在思考",end="",flush=True)
@@ -182,6 +192,15 @@ def make_png():
 def virtual_pet():
     global happy,satiety,clean
     pet_says = {"good":["好开心！😀","嗝！真满足，好喜欢主人！","我爱洗澡，鳞片好好👍"],"not bad":["心情不错！","五分饱！活到老！","一点水草，无伤大雅😊"],"bad":["不开心到吐泡🫧","好饿啊！快成鱼骨头了🦴！","一身水草，讨厌🌿！"]}
+    display_lines = [
+        f"{'='*5}电子宠物模式{'='*5}",
+        f"快乐值:{happy}/100",
+        f"饱食度:{satiety}/100",
+        f"清洁度:{clean}/100",
+        "🐟:你好呀！我叫小鱼！",
+        "="*22,
+        "(1玩耍,2喂食,3洗澡,exit退出):",
+    ]
     char_print(f"\033[94m{'='*5}电子宠物模式{'='*5}\n")
     char_print(f"快乐值:{happy}/100\n")
     char_print(f"饱食度:{satiety}/100\n")
@@ -216,8 +235,7 @@ def virtual_pet():
     satiety = max(0,min(100,satiety))
     clean = max(0,min(100,clean))
     while True:
-        for _ in range(7):
-            print("\033[F\033[2K",end="",flush=True)
+        clear_display_lines(display_lines[:-1] + [display_lines[-1] + a])
         num = random.randint(1,3)
         if num == 1:
             if happy >= 70:
@@ -240,6 +258,15 @@ def virtual_pet():
                 say = pet_says["not bad"][2]
             else:
                 say = pet_says["bad"][2]
+        display_lines = [
+            f"{'='*5}电子宠物模式{'='*5}",
+            f"快乐值:{happy}/100",
+            f"饱食度:{satiety}/100",
+            f"清洁度:{clean}/100",
+            f"🐟:{say}",
+            "="*22,
+            "(1玩耍,2喂食,3洗澡,exit退出):",
+        ]
         print(f"\033[94m{'='*5}电子宠物模式{'='*5}")
         print(f"快乐值:{happy}/100")
         print(f"饱食度:{satiety}/100")
