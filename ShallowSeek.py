@@ -44,6 +44,7 @@ def char_print(text,end = ''):
     print(end, end='', flush=True)
 
 def display_width(text):
+    '''估算字符串在终端中占用的列数'''
     width = 0
     for ch in text:
         if unicodedata.east_asian_width(ch) in ('F', 'W'):
@@ -53,12 +54,13 @@ def display_width(text):
     return width
 
 def clean_float_result(result):
+    '''保留10位小数，解决一定的计算错误'''
     if isinstance(result, float) and result.is_integer():
         return int(result)
     return (f"{result:.10f}").rstrip('0').rstrip('.')
 
 def pysum(s):
-    '''用eval计算算式的结果并返回'''
+    '''用eval计算算式的结果并返回，建议加上限制/检测'''
     if len(s) < 30:
         try:
             num = eval(s)
@@ -70,6 +72,7 @@ def pysum(s):
         return "算式太长了,俺拒绝计算🤪!"
 
 def clear_input_lines(text, prompt):
+    '''清除提示语和用户输入'''
     columns = shutil.get_terminal_size((80, 20)).columns
     total_width = display_width(prompt) + display_width(text)
     lines = max(1, (total_width + columns - 1) // columns)
@@ -77,6 +80,7 @@ def clear_input_lines(text, prompt):
         print("\033[F\033[2K", end='')
 
 def clear_display_lines(lines):
+    '''清除一组文字'''
     columns = shutil.get_terminal_size((80, 20)).columns
     row_count = 0
     for line in lines:
@@ -87,6 +91,7 @@ def clear_display_lines(lines):
         print("\033[F\033[2K", end="", flush=True)
 
 def think_over():
+    '''模拟思考过程'''
     print("\033[94m正在思考",end="",flush=True)
     for _ in range(5):
         print(".",end="",flush=True)
@@ -94,6 +99,7 @@ def think_over():
     print('\r               ', end = '\r')
 
 def answer(question):
+    '''shallowseek的主要回答函数'''
     global is_crazy
     if "速算" in question or "挑战" in question or "数学" in question:
         play_math_challenge()
@@ -148,9 +154,9 @@ def answer(question):
                 return "我们还什么都没聊呢🧐"
         if can_ast(question):
             return pysum(question)
+        if re.search(r"^\s*$",question):
+            return random.choice(Q_A["not have"])
         for q in Q_A:
-            if re.search(r"^\s*$",question):
-                return random.choice(Q_A["not have"])
             if isinstance(Q_A[q],dict):
                 if q in question:
                     for t in Q_A[q]:
@@ -163,6 +169,7 @@ def answer(question):
         return c
 
 def make_png():
+    '''生成图片函数'''
     print("\033[94m正在生成",end="",flush=True)
     for _ in range(5):
         print(".",end="",flush=True)
@@ -190,6 +197,7 @@ def make_png():
     char_print(f"\033[94m🤖:已生成：图片.png，位置:{path}\\图片.png\n\033[0m")
 
 def virtual_pet():
+    '''电子宠物函数'''
     global happy,satiety,clean
     pet_says = {"good":["好开心！😀","嗝！真满足，好喜欢主人！","我爱洗澡，鳞片好好👍"],"not bad":["心情不错！","五分饱！活到老！","一点水草，无伤大雅😊"],"bad":["不开心到吐泡🫧","好饿啊！快成鱼骨头了🦴！","一身水草，讨厌🌿！"]}
     display_lines = [
@@ -302,6 +310,7 @@ def virtual_pet():
         clean = max(0,min(100,clean))
 
 def can_ast(code):
+    '''检测输入是否是一个算式'''
     try:
         tree = ast.parse(code,mode="eval")
     except:
@@ -313,66 +322,68 @@ def can_ast(code):
 
 #游戏函数
 def play_rqs():
-        c_not_win = 0
-        p_not_win = 0
-        think_over()
-        char_print("\033[94m🤖:好嘞，石头剪刀布游戏开始!\n")
-        while True:
-            random_choice=random.randint(0,2)
+    '''石头剪刀布游戏'''
+    c_not_win = 0
+    p_not_win = 0
+    think_over()
+    char_print("\033[94m🤖:好嘞，石头剪刀布游戏开始!\n")
+    while True:
+        random_choice=random.randint(0,2)
 
-            if random_choice==0:
-                computer_choice='石头'
-            elif random_choice==1:
-                computer_choice='剪刀'
-            else:
-                computer_choice='布'
+        if random_choice==0:
+            computer_choice='石头'
+        elif random_choice==1:
+            computer_choice='剪刀'
+        else:
+            computer_choice='布'
 
-            char_print('\033[94m   你出石头、剪刀还是布？')
+        char_print('\033[94m   你出石头、剪刀还是布？')
+        user_choice=input('')
+        while user_choice!='石头'and user_choice!='剪刀'and user_choice!='布':
+            char_print('   请重新输入！你出石头、剪刀还是布？')
             user_choice=input('')
-            while user_choice!='石头'and user_choice!='剪刀'and user_choice!='布':
-                char_print('   请重新输入！你出石头、剪刀还是布？')
-                user_choice=input('')
 
-            char_print(f'   你出：{user_choice},我出：{computer_choice}\n')
-            time.sleep(1)
+        char_print(f'   你出：{user_choice},我出：{computer_choice}\n')
+        time.sleep(1)
 
-            if computer_choice==user_choice:
-                winner='平局'
-            elif computer_choice=='布'and user_choice=='石头':
-                winner='我'
-                p_not_win += 1
-                c_not_win = 0
-            elif computer_choice=='石头'and user_choice=='剪刀':
-                winner='我'
-                p_not_win += 1
-                c_not_win = 0
-            elif computer_choice=='剪刀'and user_choice=='布':
-                winner='我'
-                p_not_win += 1
-                c_not_win = 0
-            else:
-                winner='你'
-                c_not_win += 1
-                p_not_win = 0
+        if computer_choice==user_choice:
+            winner='平局'
+        elif computer_choice=='布'and user_choice=='石头':
+            winner='我'
+            p_not_win += 1
+            c_not_win = 0
+        elif computer_choice=='石头'and user_choice=='剪刀':
+            winner='我'
+            p_not_win += 1
+            c_not_win = 0
+        elif computer_choice=='剪刀'and user_choice=='布':
+            winner='我'
+            p_not_win += 1
+            c_not_win = 0
+        else:
+            winner='你'
+            c_not_win += 1
+            p_not_win = 0
 
-            if winner=='平局':
-                char_print('   本轮为平局\033[0m\n')
-            else :
-                char_print(f'   本轮{winner}赢了👍\033[0m\n')
-            if c_not_win == 3:
-                char_print("嘤嘤嘤😥，连输了三把，不玩了(╯°□°)╯︵ ┻━┻！\n")
-                break
-            if p_not_win == 3:
-                char_print("Sorry，连赢了你3把，请不要生气哦😏\n")
-                break
-            char_print("   还玩吗？")
-            a = input("")
+        if winner=='平局':
+            char_print('   本轮为平局\033[0m\n')
+        else :
+            char_print(f'   本轮{winner}赢了👍\033[0m\n')
+        if c_not_win == 3:
+            char_print("嘤嘤嘤😥，连输了三把，不玩了(╯°□°)╯︵ ┻━┻！\n")
+            break
+        if p_not_win == 3:
+            char_print("Sorry，连赢了你3把，请不要生气哦😏\n")
+            break
+        char_print("   还玩吗？")
+        a = input("")
 
-            if "不" in a:
-                print("ok！如你所愿😀")
-                break
+        if "不" in a:
+            print("ok！如你所愿😀")
+            break
 
 def play_guess_n():
+    '''猜数字游戏'''
     remaining_chances = 5
     g_number = random.randint(50,200)
     s_number = g_number - random.randint(3,5)
@@ -399,82 +410,90 @@ def play_guess_n():
             return None
 
 def play_math_challenge():
-    think_over()
+    '''速算挑战游戏'''
     right_number = 0
-    time_list = []
-    a_list = []
+    small_time = 5
     char_print("\033[94m🤖:速算挑战开始！五秒内答题！\n   tip:除了数字别写别的，不会就敲n\n")
     s = "+-*/"
     while True:
+        #生成算式
         t = f"{random.randint(2,20)}{random.choice(s)}{random.randint(2,20)}"
-        t_a = eval(t)
-        if "-" in str(t_a) or "." in str(t_a):
-            while  "-" in str(t_a) or "." in str(t_a):
+        right_answer = eval(t)
+        c = eval(t)
+        d = int(eval(t))
+        if c == d:
+            right_answer = int(right_answer)
+        if "-" in str(right_answer) or "." in str(right_answer):
+            while  "-" in str(right_answer) or "." in str(right_answer):
                 t = f"{random.randint(2,20)}{random.choice(s)}{random.randint(2,20)}"
-                t_a = eval(t)
+                right_answer = eval(t)
+        #出题
         char_print(f"   算式'{t}=?'的结果:\033[0m")
         print("\033[94m",end="",flush=True)
         start = time.time()
         a = input("")
-        a_list.append(a)
         if not a == "n":
+            do_it = True
             try:
                 a = int(a)
             except:
                 char_print("   嗯?有违规字符，你犯规了😡！\n\033[0m")
                 return None
-        end = time.time()
-        spend_time = int(end - start)
-        time_list.append(spend_time)
-        if len(time_list) > 0:
-            for i in time_list:
-                min_time = 20
-                if i < min_time:
-                    min_time = i
-        if spend_time > 5:
-            char_print(f"   哦哦，你用了{spend_time}秒，超时啦！\n   游戏结束😏\033[92m\n\n")
-            char_print(f"   {'='*15}结算{'='*15}\n")
-            char_print(f"   这场挑战，你答对了{right_number}道题。\n")
-            char_print(f"   你最快的一次，只用了{min_time}秒就算出了结果。\n")
-            char_print(f"   恭喜你！勇士！\033[0m")
-            return None
-        if a == "n":
-            for i in a_list:
-                if i == "n":
-                    only_n = True
-                else:
-                    only_n = False
-                    break
-            if only_n:
-                char_print("   好吧😀，这题你不会，进入结算：\033[92m\n\n")
-                char_print(f"   {'='*15}结算{'='*15}\n")
-                char_print(f"   这场挑战，你没有答题。\n")
-                char_print(f"   继续努力！勇士！\033[0m\n")
-                return None
+            end = time.time()
+            this_time = int(end - start)
+            if this_time > 5:
+                is_timeout = True
             else:
-                char_print("   好吧😀，这题你不会，进入结算：\033[92m\n\n")
-                char_print(f"   {'='*15}结算{'='*15}\n")
-                char_print(f"   这场挑战，你答对了{right_number}道题。\n")
-                char_print(f"   你最快的一次，只用了{spend_time}秒就算出了结果。\n")
-                char_print(f"   恭喜你！勇士！\033[0m\n")
-                return None
-        elif a == eval(t):
-            right_number += 1
-            char_print("   答对啦！下一题👍\n")
+                is_timeout = False
+
+            if this_time < small_time:
+                small_time = this_time
+
+            if a == right_answer:
+                is_right = True
+            else:
+                is_right = False
+
+            
+
+            if right_number > 0:
+                say = f"   这场挑战，你答对了{right_number}道题。\n你最快的一次，只用了{small_time}秒就算出了结果。\n恭喜你！勇士！\n\033[0m"
+            else:
+                say = "   这场挑战，你没有答题。\n继续努力！勇士！\033[0m"
         else:
-            char_print("   不好！你答错啦！游戏结束👋\033[92m\n\n")
+            do_it = False
+        #判断和结算
+        #做没做
+        if do_it:
+            #超不超时
+            if is_timeout:
+                char_print(f"   哦哦，你用了{this_time}秒，超时!😏\033[92m\n\n")
+                char_print(f"   {'='*15}结算{'='*15}\n")
+                char_print(say)
+                return None
+            #对不对
+            if is_right:
+                right_number += 1
+                char_print("   答对啦！下一题👍\n")
+            else:
+                char_print("   不好！你答错啦！游戏结束👋\033[92m\n\n")
+                char_print(f"   {'='*15}结算{'='*15}\n")
+                char_print(say)
+                return None
+        else:
+            char_print("   好吧😀，这题你不会，进入结算：\033[92m\n\n")
             char_print(f"   {'='*15}结算{'='*15}\n")
-            char_print(f"   这场挑战，你答对了{right_number}道题。\n")
-            char_print(f"   你最快的一次，只用了{min_time}秒就算出了结果。\n")
-            char_print(f"   恭喜你！勇士！\n\033[0m")
+            char_print(say)
             return None
 
 #AI发疯函数
 def become_crazy():
+    '''模拟AI的“发疯”行为'''
     global is_crazy
     global crazy_n
     if crazy_n > 9 or random.randint(1,100) < 11:
         is_crazy = False
+        crazy_n = 0
         return None
     if is_crazy == True:
         crazy_n += 1
@@ -487,6 +506,7 @@ def become_crazy():
 
 #主程序函数
 def run():
+    '''shallowseek的主程序'''
     print("\033[93m正在启动ShallowSeek,请稍等...\033[0m",end = '\r')
     time.sleep(1)
     print("\033[92mShallowSeek已启动!           \033[0m")
