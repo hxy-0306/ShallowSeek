@@ -20,13 +20,12 @@ v = 1.6
 last_say = []
 say_list = []
 allowed = (ast.Expression, #表示算式
-           ast.BinOp, #二元运算
-           ast.UnaryOp, #一元运算
-           ast.Constant, #数字
-           ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow, #四则运算+次方
-           ast.USub #负号
-           )
-#电子宠物变量
+            ast.BinOp, #二元运算
+            ast.UnaryOp, #一元运算
+            ast.Constant, #数字
+            ast.Add,ast.Sub,ast.Mult,ast.Div,ast.Pow, #四则运算+次方
+            ast.USub #负号
+            )
 happy = 50
 satiety = 50
 clean = 50
@@ -53,6 +52,7 @@ sys.stdout = _Tee(sys.stdout)
 _orig_input = builtins.input
 def _rec_input(prompt=""):
     '''记录用户输入回显（终端回显不经 sys.stdout，需要手工补）'''
+
     s = _orig_input(prompt)
     if _cap is not None:
         if prompt:
@@ -74,6 +74,16 @@ def end_capture():
     return raw
 
 #定义函数
+def init():
+    global crazy_n,is_crazy,last_say,say_list,happy,satiety,clean
+    crazy_n = 0
+    is_crazy = False
+    last_say = []
+    say_list = []
+    happy = 50
+    satiety = 50
+    clean = 50
+
 def char_print(text,end = ''):
     '''逐字输出，默认不换行，end里写结尾的输出内容'''
     if BUSY_A[4] in text:
@@ -237,11 +247,11 @@ def answer(question):
         return None
     if "存档" in question or "保存" in question:
         think_over()
-        a()
+        save()
         return None
     if "读档" in question or "加载" in question:
         think_over()
-        b()
+        load()
         return None
     c = become_crazy()
     if c == None:
@@ -277,26 +287,28 @@ def make_png():
         print(".",end="",flush=True)
         time.sleep(0.4)
     print('\r               ', end = '\r')
-
-    path = os.getcwd()
-    img = Image.new('RGB', (400, 355), 'black')
-    draw = ImageDraw.Draw(img)
-
-    text = """    哈哈哈！开个玩笑！
-    这张图片没有任何内容！""" 
     try:
-        font_path = os.path.join(sys._MEIPASS,"font.ttf")
+        path = os.getcwd()
+        img = Image.new('RGB', (400, 355), 'black')
+        draw = ImageDraw.Draw(img)
+
+        text = """    哈哈哈！开个玩笑！
+        这张图片没有任何内容！""" 
+        try:
+            font_path = os.path.join(sys._MEIPASS,"font.ttf")
+        except:
+            font_path = "font.ttf"
+        font = ImageFont.truetype(font_path,20)
+
+        bbox = draw.textbbox((0, 0), text, font=font)
+        x = (400 - (bbox[2] - bbox[0])) // 2
+        y = (355 - (bbox[3] - bbox[1])) // 2
+        draw.text((x, y), text, fill='white', font=font)
+
+        img.save('图片.png')
+        return f"已生成：图片.png，位置:{path}\\图片.png"
     except:
-        font_path = "font.ttf"
-    font = ImageFont.truetype(font_path,20)
-
-    bbox = draw.textbbox((0, 0), text, font=font)
-    x = (400 - (bbox[2] - bbox[0])) // 2
-    y = (355 - (bbox[3] - bbox[1])) // 2
-    draw.text((x, y), text, fill='white', font=font)
-
-    img.save('图片.png')
-    return f"已生成：图片.png，位置:{path}\\图片.png"
+        return "图片生成失败❌"
 
 def virtual_pet(trigger="宠物"):
     '''电子宠物函数'''
@@ -428,7 +440,7 @@ def can_ast(code):
             return False
     return True
 
-def a():
+def save():
     char_print("\033[94m输入存档名称:")
     name = input("")
     global crazy_n,is_crazy,last_say,happy,satiety,clean,say_list
@@ -441,11 +453,14 @@ def a():
         "clean":clean,
         "say_list":say_list
     }
-    with open(f"{name}.json","w",encoding="utf-8") as file:
-        json.dump(data,file,ensure_ascii=False, indent=2)
-    char_print("\033[94m已存档!\033[0m\n")
+    try:
+        with open(f"{name}.json","w",encoding="utf-8") as file:
+            json.dump(data,file,ensure_ascii=False, indent=2)
+        char_print("\033[94m已存档!\033[0m\n")
+    except:
+        char_print("\033[94m存档失败!\033[0m\n")
 
-def b():
+def load():
     global crazy_n,is_crazy,last_say,happy,satiety,clean,say_list
     char_print("\033[94m输入存档名称:")
     name = input("")
@@ -576,7 +591,7 @@ def play_guess_n(trigger="猜数字"):
             else:
                 if remaining_chances != 0:
                     record(guess,f"不对哦，还有{remaining_chances}次机会")
-                char_print(f"\033[94m   不对哦，还有\033[93m{remaining_chances}\033[94m次机会。再猜:\033[0m")
+                    char_print(f"\033[94m   不对哦，还有\033[93m{remaining_chances}\033[94m次机会。再猜:\033[0m")
         else:
             if not remaining_chances == 0:
                 record(guess,f"不对哦，还有{remaining_chances}次机会")
@@ -705,7 +720,7 @@ def run():
     char_print("\n\033[94m嗨!我是ShallowSeek(浅度求索),有什么可以帮你的吗?\033[0m")
     char_print("\n\033[94mh帮助,v看版本(偷偷告诉你，计算要谨慎)\033[0m\n")
     record_raw("\n\033[94m嗨!我是ShallowSeek(浅度求索),有什么可以帮你的吗?\033[0m")
-    record_raw("\n\033[94mh帮助,v看版本(偷偷告诉你，计算要谨慎)\033[0m\n")
+    record_raw("\n\033[94mh帮助,v看版本,n开启新对话(偷偷告诉你，计算要谨慎)\033[0m\n")
     while True:
         t = input('说点什么：')
         clear_input_lines(t, '说点什么：')
@@ -718,6 +733,12 @@ def run():
         if t == "v":
             char_print(f"\033[94m🤖:版本号-{v}\n\033[0m")
             record(t,f"版本号-{v}","94")
+            continue
+        if t == "n":
+            clear = "cls" if os.name == "nt" else "clear"
+            subprocess.run(clear,shell=True)
+            init()
+            char_print("\033[94m已开启新对话!\033[0m\n")
             continue
         if t == "yxh4321":
             p.pprint(Q_A)
