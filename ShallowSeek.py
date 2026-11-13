@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 #定义变量
 crazy_n = 0
 is_crazy = False
-v = 1.6
+v = 1.7
 last_say = []
 say_list = []
 allowed = (ast.Expression, #表示算式
@@ -718,7 +718,7 @@ def run():
     print("\033[92mShallowSeek已启动!           \033[0m")
     time.sleep(0.5)
     char_print("\n\033[94m嗨!我是ShallowSeek(浅度求索),有什么可以帮你的吗?\033[0m")
-    char_print("\n\033[94mh帮助,v看版本(偷偷告诉你，计算要谨慎)\033[0m\n")
+    char_print("\n\033[94mh帮助,v看版本,n开启新对话(偷偷告诉你，计算要谨慎)\033[0m\n")
     record_raw("\n\033[94m嗨!我是ShallowSeek(浅度求索),有什么可以帮你的吗?\033[0m")
     record_raw("\n\033[94mh帮助,v看版本,n开启新对话(偷偷告诉你，计算要谨慎)\033[0m\n")
     while True:
