@@ -223,13 +223,11 @@ def answer(question):
             record_game(question,"（小游戏）",end_capture())
         return None
     if "发疯" in question or "疯狂" in question:
-        think_over()
         if not is_crazy:
             is_crazy = True
             return "如你所愿！我要疯了……哇哩哇哩哇！你好！我是疯狂戴夫！"
         return "你说什么?告诉你，我已经疯狂了👾!"
     if "恢复" in question:
-        think_over()
         if is_crazy:
             is_crazy = False
             return "好!这就恢复正常👋"
